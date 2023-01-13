@@ -1,6 +1,7 @@
 import re
 import string
 from collections import Counter
+import sqlite3
 
 
 # Task Lecture 56
@@ -80,12 +81,12 @@ try :
             listWithAlphabet.append((x,len(wordsList)))
         return listWithAlphabet    
 
-
-    print("Answer of startsWith Answer 2 file1  \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile1))
-    print("Answer of startsWith Answer 2 file2 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile2))
-    print("Answer of startsWith Answer 2 file3 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile3))
-    print("Answer of startsWith Answer 2 file4 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile4))
-    print("Answer of startsWith Answer 2 file5 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile5))
+        
+    # print("Answer of startsWith Answer 2 file1  \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile1))
+    # print("Answer of startsWith Answer 2 file2 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile2))
+    # print("Answer of startsWith Answer 2 file3 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile3))
+    # print("Answer of startsWith Answer 2 file4 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile4))
+    # print("Answer of startsWith Answer 2 file5 \n\n\n\n ",getAlphbetCountOfWordsInList(alphabet, listOfWordInFile5))
         
 
     # print("Answer of question 1 for file1 \n\n\n\n ",getListOfWordWithCount(setOfWordInFile1, listOfWordInFile1))
@@ -93,7 +94,29 @@ try :
     # print("Answer of question 1 for file3 \n\n\n\n ",getListOfWordWithCount(setOfWordInFile3, listOfWordInFile3))
     # print("Answer of question 1 for file4 \n\n\n\n ",getListOfWordWithCount(setOfWordInFile4, listOfWordInFile4))
     # print("Answer of question 1 for file5 \n\n\n\n ",getListOfWordWithCount(setOfWordInFile5, listOfWordInFile5))
+
+    conn = sqlite3.connect('test.db')
+    cur = conn.cursor()
+    cur.execute("drop table zipdatatable ")
+    conn.commit()
     
+    cur.execute("create table zipdatatable ('c1' varchar(100),'c2' varchar(100),'c3' varchar(100),'c4' varchar(100),'c5' varchar(100))")
+    conn.commit()
+
+    zipData = zip(listOfWordInFile1,listOfWordInFile2,listOfWordInFile3,listOfWordInFile4,listOfWordInFile5)
+
+    # print("Zip all file data : ",list(zipData))
+
+    cur.executemany('insert into zipdatatable (c1,c2,c3,c4,c5) values (?,?,?,?,?)',zipData)
+    conn.commit()
+
+    cu = cur.execute("select * from zipdatatable ")
+    for i in cu:
+        print("cursor data: ", i)
+    
+
+    # print("Opened database successfully")
+
 except Exception as e:
     
     print(f"exception occured while performing file operation error: {e} ")
@@ -110,4 +133,7 @@ finally:
         fileFour.close()
     if fileFive!= None:
         fileFive.close()            
+    if conn != None:
+        conn.close()
+
 
